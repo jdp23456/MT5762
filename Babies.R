@@ -80,11 +80,11 @@ babies$number <- factor(babies$number,
                         levels = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9), 
                         labels = c("0", "1 to 4", "5 to 9", "10 to 14", "15 to 19", "20 to 29", "30 to 39", "40 to 60", "Over 60", "smoke but dont know"))
 babies$ed <- factor(babies$ed,
-                    levels = c(1, 2, 3, 4, 5, 6), 
-                    labels = c( "8th to 12th grade and did not graduate", "HS graduate but no other schooling", "HS and trade","HS and some college", "College graduate", "Trade school HS unclear"))
+                    levels = c(1, 2, 6, 3, 4, 5), 
+                    labels = c( "8th to 12th grade and did not graduate", "HS graduate but no other schooling", "Trade school HS unclear","HS and trade", "HS and some college", "College graduate"))
 babies$ded <- factor(babies$ded,
-                     levels = c(1, 2, 3, 4, 5, 6), 
-                     labels = c( "8th to 12th grade and did not graduate", "HS graduate but no other schooling", "HS and trade","HS and some college", "College graduate", "Trade school HS unclear"))
+                     levels = c(1, 2, 6, 3, 4, 5), 
+                     labels = c( "8th to 12th grade and did not graduate", "HS graduate but no other schooling", "Trade school HS unclear", "HS and trade", "HS and some college", "College graduate"))
 babies$race <- factor(babies$race,
                       levels = c(5, 6, 7, 8, 9), 
                       labels = c("White", "Mexican", "Black", "Asian", "Mixed"))
@@ -96,26 +96,41 @@ babies$marital <- factor(babies$marital,
                          labels = c("Married", "Legally separated", "Divorced", "Widowed", "Never married"))
 
 
+# #Rename headers to further explain what each column means
+# babies <- babies %>% rename(Birth_Weight = wt)
+# babies <- babies %>% rename(mothers_education = ed)
+# babies <- babies %>% rename(mothers_race = race)
+# babies <- babies %>% rename(mothers_age = age)
+# babies <- babies %>% rename(mothers_height = ht)
+# babies <- babies %>% rename(fathers_education = ded)
+# babies <- babies %>% rename(fathers_height = dht)
+# babies <- babies %>% rename(fathers_weight = dwt)
+# babies <- babies %>% rename(fathers_race = drace)
+# babies <- babies %>% rename(fathers_age = dage)
+# babies <- babies %>% rename(Family_annual_income = inc)
+# babies <- babies %>% rename(number_of_Cigs_per_day = number)
+# babies <- babies %>% rename(Number_of_previous_pregnancies = parity)
+# babies <- babies %>% rename(Time_since_mother_quit = time)
+# babies <- babies %>% rename(Length_of_Gestation_Days = gestation)
 
-#Rename headers to further explain what each column means
-babies <- babies %>% rename(Birth_Weight = wt)
-babies <- babies %>% rename(mothers_education = ed)
-babies <- babies %>% rename(mothers_race = race)
-babies <- babies %>% rename(mothers_age = age)
-babies <- babies %>% rename(mothers_height = ht)
-babies <- babies %>% rename(fathers_education = ded)
-babies <- babies %>% rename(fathers_height = dht)
-babies <- babies %>% rename(fathers_weight = dwt)
-babies <- babies %>% rename(fathers_race = drace)
-babies <- babies %>% rename(fathers_age = dage)
-babies <- babies %>% rename(Family_annual_income = inc)
-babies <- babies %>% rename(number_of_Cigs_per_day = number)
-babies <- babies %>% rename(Number_of_previous_pregnancies = parity)
-babies <- babies %>% rename(Time_since_mother_quit = time)
-babies <- babies %>% rename(Length_of_Gestation_Days = gestation)
+#Plot number of cigarettes per day vs baby birth weight
+ggplot(babies, aes(number, wt)) + geom_boxplot()
+
+#Plot the number of cigaretttes per day vs family income
+ggplot(babies, aes(inc, wt)) + geom_boxplot()
+
+#Plot gestation time in days vs baby weight
+ggplot(babies, aes(gestation, wt)) + geom_point()
+#Results show the optimal gestation period is about 294 days
+#Full term babies are at 42 weeks gestation
 
 
-#Write out newl.            csv file with all NA values accounted for, and better explanations of each variable in the dataset
+ggplot(babies, aes(dage, wt)) + geom_smooth()
+
+ggplot(babies, aes(ed, wt)) + geom_boxplot()
+
+
+#Write out new csv file with all NA values accounted for, and better explanations of each variable in the dataset
 write.csv(babies, file = "BabiesData.csv")
 
 
