@@ -4,7 +4,7 @@ library(crunch)
 
 babies <- read.csv("babies23.data", sep = "")
 #babies <- read.csv("babies.csv")
-
+babies
 
 #Remove the plurality, outcome, date, and sex columns from the dataframe 
 babies <- subset(babies, select = -c(pluralty, outcome, date, sex))
@@ -16,14 +16,14 @@ babies <- babies %>% rename(mothers_weight = wt.1)
 
 babies %>% filter(wt == 999)
 babies %>% filter(gestation == 999)
-babies %>% filter(race == 99)
+babies %>% filter(race == 99 | race == 10)
 babies %>% filter(inc == 98 | inc == 99)
 babies %>% filter(age == 99)
 babies %>% filter(ed == 9)
 babies %>% filter(ht == 99)
 babies %>% filter(smoke == 9)
 babies %>% filter(time == 98 | time == 99 | time == 9)
-babies %>% filter(drace == 99)
+babies %>% filter(drace == 99 | drace == 10)
 babies %>% filter(dage == 99)
 babies %>% filter(ded == 9)
 babies %>% filter(dht == 99)
@@ -35,6 +35,7 @@ babies %>% filter(mothers_weight == 999)
 babies$wt[babies$wt == 999] = NA
 babies$gestation[babies$gestation == 999] = NA
 babies$race[babies$race == 99] = NA
+babies$race[babies$race == 10] = NA
 babies$inc[babies$inc == 98] = NA
 babies$inc[babies$inc == 99] = NA
 babies$age[babies$age == 99] = NA
@@ -48,6 +49,7 @@ babies$number[babies$number == 98] = NA
 babies$number[babies$number == 99] = NA
 babies$number[babies$number == 9] = NA
 babies$drace[babies$drace == 99] = NA
+babies$drace[babies$drace == 10] = NA
 babies$dage[babies$dage == 99] = NA
 babies$ded[babies$ded == 9] = NA
 babies$dht[babies$dht == 99] = NA
