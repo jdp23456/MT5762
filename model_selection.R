@@ -1,97 +1,100 @@
+library(MuMIn)
 library(car)
-
 # read .csv data
-raw_data <- read_csv("BabiesData.csv")
+raw_data <- read.csv("BabiesData.csv")
 # omit NA value
 processed_data <- na.omit(raw_data)
 
 # generate linear model
-raw_model <- lm(formula = Birth_Weight ~ ., data = processed_data)
-# get rid of columns 'id' and 'X1' because they are not related
-raw_model <- update(raw_model, . ~ . - id - X1)
-# original summary of raw_model
-summary(raw_model)
-# p-value of each property
-anova(raw_model)
+raw_model <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) + 
+     mothers_race + mothers_age + mothers_education + mothers_height + 
+     mothers_weight + fathers_race + fathers_age + fathers_education + 
+     fathers_height + fathers_weight + marital + Family_annual_income + 
+     smoke + Time_since_mother_quit + number_of_Cigs_per_day, 
+   data = processed_data, na.action = "na.fail")
 
-# use CIA to perform model selection by step
-raw_model <- step(raw_model)
 summary(raw_model)
-anova(raw_model)
+Anova(raw_model)
+
+# delete variable smoke because it is highly related to other variables
+# delete variables which have very high p-value
+raw_model <- update(raw_model, .~. - smoke - marital - Family_annual_income - fathers_age - mothers_age)
+# delete variable number_of_Cigs_per_day because there are NAs in summary
 # we can see from summary(raw_model), it shows that 'Coefficients: (1 not defined because of singularities)'
 # NAs in the coefficients table means there are too few subjects to assess the influence of number_of_Cigs_per_days
 # we can simplify this model by removing it
-raw_model <- update(raw_model, .~. -number_of_Cigs_per_day)
+raw_model <- update(raw_model, .~. - number_of_Cigs_per_day)
 summary(raw_model)
+Anova(raw_model)
 
-# **************************************************************************************
+# try to add interactions in the raw_model
+second_model <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) + 
+                     mothers_race + mothers_education + mothers_height + mothers_weight + 
+                     fathers_race + fathers_education + fathers_height + fathers_weight + 
+                     Time_since_mother_quit + mothers_education:Length_of_Gestation_Days +
+                     mothers_race:Length_of_Gestation_Days, data = processed_data, na.action = "na.fail")
+summary(second_model)
+Anova(second_model)
 
-# Consider interactions between numeric and categorical covariates
+# using dredge() to find all possible subsets
+# select top4 models with AIC value
+new_model <- dredge(second_model)
+models <- head(new_model, n=4)
 
-# mothers_age * mothers_race
-# fail
-a<-lm(formula = Birth_Weight ~ mothers_age * mothers_race, data = processed_data)
-summary(a)
-# mothers_age * Time_since_mother_quit
-# fail
-a<-lm(formula = Birth_Weight ~ mothers_age * Time_since_mother_quit, data = processed_data)
-summary(a)
-# mothers_age * number_of_Cigs_per_day
-# fail
-a<-lm(formula = Birth_Weight ~ mothers_age * number_of_Cigs_per_day, data = processed_data)
-summary(a)
+model_1 <- models[1]
+model_1 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) + 
+                                  mothers_height + fathers_race + fathers_weight + Time_since_mother_quit, 
+                                  data = processed_data, na.action = "na.fail")
+model_2 <- models[2]
+model_2 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) + 
+                                  mothers_height + mothers_weight + fathers_race + fathers_weight + Time_since_mother_quit, 
+                                  data = processed_data, na.action = "na.fail")
+model_3 <- models[3]
+model_3 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) + 
+                                  mothers_education + mothers_height + fathers_race + fathers_weight + 
+                                  Time_since_mother_quit + mothers_education:Length_of_Gestation_Days,  
+                                  data = processed_data, na.action = "na.fail")
+model_4 <- models[4]
+model_4 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) + 
+                                  mothers_race + mothers_education + mothers_height + fathers_weight + 
+                                  Time_since_mother_quit + mothers_education:Length_of_Gestation_Days + 
+                                  mothers_race:Length_of_Gestation_Days, data = processed_data, na.action = "na.fail")
 
-# Consider interactions between numeric covariates
-
-# mothers_age * Length_of_Gestation_Days
-# fail
-a<-lm(formula = Birth_Weight ~ mothers_age * Length_of_Gestation_Days, data = processed_data )
-summary(a)
-# mothers_height * mothers_weight
-# fail
-a<-lm(formula = Birth_Weight ~ mothers_height * mothers_weight, data = processed_data )
-summary(a)
-# mothers_height * Length_of_Gestation_Days
-# fail
-a<-lm(formula = Birth_Weight ~ mothers_height * Length_of_Gestation_Days, data = processed_data )
-summary(a)
-
-# Consider interactions between categorical covariates
-
-# mothers_education * fathers_education
-# fail
-a<-lm(formula = Birth_Weight ~ mothers_education * fathers_education, data = processed_data )
-summary(a)
-# Family_annual_income * number_of_Cigs_per_day
-# fail
-a<-lm(formula = Birth_Weight ~ Family_annual_income * number_of_Cigs_per_day, data = processed_data )
-summary(a)
-# mothers_race * fathers_race
-# fail
-a<-lm(formula = Birth_Weight ~ mothers_race * fathers_race, data = processed_data )
-summary(a)
-
-
-# **************************************************************************************
-# Model Dignostics
+# Checking model assumptions
 
 # Error Distribution
-qqnorm(resid(raw_model))
-qqline(resid(raw_model))
-# p-value is 0.3683, fail to deny H0, so residuals of model obey normal distribution
-shapiro.test(resid(raw_model))
-# error shape
-hist(resid(raw_model))
+
+# p-value is 0.7971, fail to deny H0, so residuals of model obey normal distribution
+qqnorm(resid(model_1))
+qqline(resid(model_1))
+shapiro.test(resid(model_1))
+hist(resid(model_1))
+# p-value is 0.7252, fail to deny H0, so residuals of model obey normal distribution
+qqnorm(resid(model_2))
+qqline(resid(model_2))
+shapiro.test(resid(model_2))
+hist(resid(model_2))
+# p-value is 0.4678, fail to deny H0, so residuals of model obey normal distribution
+qqnorm(resid(model_3))
+qqline(resid(model_3))
+shapiro.test(resid(model_3))
+hist(resid(model_3))
+# p-value is 0.4153, fail to deny H0, so residuals of model obey normal distribution
+qqnorm(resid(model_4))
+qqline(resid(model_4))
+shapiro.test(resid(model_4))
+hist(resid(model_4))
+
 # constant spread
-# p-value is 0.96137, fail to deny H0, so rediduals have constant variance
-ncvTest(raw_model)
-# independence
-# p-value is 0.018, deny H0, that is not what I want
-durbinWatsonTest(raw_model)
 
-# Collinearity with VIFs
-# no need to alter model
-vif(raw_model)
+# p-value is 0.47521, fail to deny H0, so rediduals have constant variance
+ncvTest(model_1)
+# p-value is 0.35188, fail to deny H0, so rediduals have constant variance
+ncvTest(model_2)
+# p-value is 0.64445, fail to deny H0, so rediduals have constant variance
+ncvTest(model_3)
+# p-value is 0.90684, fail to deny H0, so rediduals have constant variance
+ncvTest(model_4)
 
-
+# Independence
 
