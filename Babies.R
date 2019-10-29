@@ -66,23 +66,23 @@ babies$ded[babies$ded %in% 6:7] = 6
 
 
 #Write out variables as factors to ease confusion for what each number means 
-
+#Does the mother smoke?
 babies$smoke <- factor(babies$smoke, 
                        levels = c(0, 1, 2, 3), 
                        labels = c("Never", "Smokes Now", "Smoked Until Current Pregnancy", "Once smoked, doesn't now"))
-
+#Time since mother last smoked
 babies$time <- factor(babies$time, 
                       levels = c(1, 2, 3, 4, 5, 6, 7, 8, 0),
                       labels = c("0", "0.5", "1", "1.5", "2.5", "3.5", "7", "11", "20"))
               #"Still smokes", "During current pregnancy", "Within 1 year", "1 to 2 years ago", 
               #"2 to 3 years ago","3 to 4 years ago", "5 to 9 years ago", "Never smoked"))
 
-#Family income for the household, on average
+#Family income for the household, averaged
 babies$inc <- factor(babies$inc, 
                      levels = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9), 
                      labels = c("2000", "3750", "5750", "6875", "8125", "9375", "10625", "11875", "13750", "17500"))  
 
-#Number of cigarettes smoked per day by the mother, on average
+#Number of cigarettes smoked per day by the mother, averaged
 babies$number <- factor(babies$number, 
                         levels = c(0, 1, 2, 3, 4, 5, 6, 7, 8), 
                         labels = c("O", "2.5", "7", "12", "17", "25", "35", "50", "65"))
@@ -98,15 +98,15 @@ babies$ed <- factor(babies$ed,
 babies$ded <- factor(babies$ded,
                      levels = c(1, 2, 6, 3, 4, 5), 
                      labels = c("10", "12", "12", "13", "14", "16"))
-
+#Mother's Race
 babies$race <- factor(babies$race,
                       levels = c(5, 6, 7, 8, 9), 
                       labels = c("White", "Mexican", "Black", "Asian", "Mixed"))
-
+#Father's Race
 babies$drace <- factor(babies$drace,
                        levels = c(5, 6, 7, 8, 9), 
                        labels = c("White", "Mexican", "Black", "Asian", "Mixed"))
-
+#Marital Status
 babies$marital <- factor(babies$marital, 
                          levels = c(1, 2, 3, 4, 5), 
                          labels = c("Married", "Legally separated", "Divorced", "Widowed", "Never married"))
