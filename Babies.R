@@ -70,27 +70,43 @@ babies$ded[babies$ded %in% 6:7] = 6
 babies$smoke <- factor(babies$smoke, 
                        levels = c(0, 1, 2, 3), 
                        labels = c("Never", "Smokes Now", "Smoked Until Current Pregnancy", "Once smoked, doesn't now"))
+
 babies$time <- factor(babies$time, 
-                      levels = c(0, 1, 2, 3, 4, 5, 6, 7), 
-                      labels = c("Never smoked", "Still smokes", "During current pregnancy", "Within 1 year", "1 to 2 years ago", "2 to 3 years ago","3 to 4 years ago", "5 to 9 years ago"))
+                      levels = c(1, 2, 3, 4, 5, 6, 7, 8, 0),
+                      labels = c("0", "0.5", "1", "1.5", "2.5", "3.5", "7", "11", "20"))
+              #"Still smokes", "During current pregnancy", "Within 1 year", "1 to 2 years ago", 
+              #"2 to 3 years ago","3 to 4 years ago", "5 to 9 years ago", "Never smoked"))
+
+#Family income for the household, on average
 babies$inc <- factor(babies$inc, 
                      levels = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9), 
-                     labels = c("Under 2500", "2500 to 4999", "5000 to 6250", "6250 to 7500", "7500 to 8750", "8750 to 10000", "10,000 to 11250", "11250 to 12500", "12500 to 14999", "Over 15000" ))  
+                     labels = c("2000", "3750", "5750", "6875", "8125", "9375", "10625", "11875", "13750", "17500"))  
+
+#Number of cigarettes smoked per day by the mother, on average
 babies$number <- factor(babies$number, 
                         levels = c(0, 1, 2, 3, 4, 5, 6, 7, 8), 
-                        labels = c("0", "1 to 4", "5 to 9", "10 to 14", "15 to 19", "20 to 29", "30 to 39", "40 to 60", "Over 60"))
+                        labels = c("O", "2.5", "7", "12", "17", "25", "35", "50", "65"))
+
+#Number of years of education mother took, averaged
 babies$ed <- factor(babies$ed,
                     levels = c(1, 2, 6, 3, 4, 5), 
-                    labels = c( "8th to 12th grade and did not graduate", "HS graduate but no other schooling", "Trade school HS unclear","HS and trade", "HS and some college", "College graduate"))
+                    labels = c("10", "12", "12", "13", "14", "16"))
+# c("8th to 12th grade and did not graduate", "HS graduate but no other schooling", 
+# "Trade school HS unclear","HS and trade", "HS and some college", "College graduate"))
+
+#Number of years of education father took 
 babies$ded <- factor(babies$ded,
                      levels = c(1, 2, 6, 3, 4, 5), 
-                     labels = c( "8th to 12th grade and did not graduate", "HS graduate but no other schooling", "Trade school HS unclear", "HS and trade", "HS and some college", "College graduate"))
+                     labels = c("10", "12", "12", "13", "14", "16"))
+
 babies$race <- factor(babies$race,
                       levels = c(5, 6, 7, 8, 9), 
                       labels = c("White", "Mexican", "Black", "Asian", "Mixed"))
+
 babies$drace <- factor(babies$drace,
                        levels = c(5, 6, 7, 8, 9), 
                        labels = c("White", "Mexican", "Black", "Asian", "Mixed"))
+
 babies$marital <- factor(babies$marital, 
                          levels = c(1, 2, 3, 4, 5), 
                          labels = c("Married", "Legally separated", "Divorced", "Widowed", "Never married"))
