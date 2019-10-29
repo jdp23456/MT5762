@@ -77,8 +77,8 @@ babies$inc <- factor(babies$inc,
                      levels = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9), 
                      labels = c("Under 2500", "2500 to 4999", "5000 to 6250", "6250 to 7500", "7500 to 8750", "8750 to 10000", "10,000 to 11250", "11250 to 12500", "12500 to 14999", "Over 15000" ))  
 babies$number <- factor(babies$number, 
-                        levels = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9), 
-                        labels = c("0", "1 to 4", "5 to 9", "10 to 14", "15 to 19", "20 to 29", "30 to 39", "40 to 60", "Over 60", "smoke but dont know"))
+                        levels = c(0, 1, 2, 3, 4, 5, 6, 7, 8), 
+                        labels = c("0", "1 to 4", "5 to 9", "10 to 14", "15 to 19", "20 to 29", "30 to 39", "40 to 60", "Over 60"))
 babies$ed <- factor(babies$ed,
                     levels = c(1, 2, 6, 3, 4, 5), 
                     labels = c( "8th to 12th grade and did not graduate", "HS graduate but no other schooling", "Trade school HS unclear","HS and trade", "HS and some college", "College graduate"))
