@@ -72,7 +72,7 @@ babies$smoke <- factor(babies$smoke,
                        labels = c("Never", "Smokes Now", "Smoked Until Current Pregnancy", "Once smoked, doesn't now"))
 babies$time <- factor(babies$time, 
                       levels = c(0, 1, 2, 3, 4, 5, 6, 7), 
-                      labels = c("0Never smoked", "Still smokes", "During current pregnancy", "Within 1 year", "1 to 2 years ago", "2 to 3 years ago","3 to 4 years ago", "5 to 9 years ago"))
+                      labels = c("Never smoked", "Still smokes", "During current pregnancy", "Within 1 year", "1 to 2 years ago", "2 to 3 years ago","3 to 4 years ago", "5 to 9 years ago"))
 babies$inc <- factor(babies$inc, 
                      levels = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9), 
                      labels = c("Under 2500", "2500 to 4999", "5000 to 6250", "6250 to 7500", "7500 to 8750", "8750 to 10000", "10,000 to 11250", "11250 to 12500", "12500 to 14999", "Over 15000" ))  
@@ -113,6 +113,24 @@ babies <- babies %>% rename(number_of_Cigs_per_day = number)
 babies <- babies %>% rename(Number_of_previous_pregnancies = parity)
 babies <- babies %>% rename(Time_since_mother_quit = time)
 babies <- babies %>% rename(Length_of_Gestation_Days = gestation)
+
+#Plot number of cigarettes per day vs baby birth weight
+ggplot(babies, aes(number, wt)) + geom_boxplot()
+
+#Plot the number of cigaretttes per day vs family income
+ggplot(babies, aes(inc, wt)) + geom_boxplot()
+
+#Plot gestation time in days vs baby weight
+ggplot(babies, aes(gestation, wt)) + geom_point()
+#Results show the optimal gestation period is about 294 days
+#Full term babies are at 42 weeks gestation
+
+
+ggplot(babies, aes(dage, wt)) + geom_smooth()
+
+ggplot(babies, aes(ed, wt)) + geom_boxplot()
+
+
 
 
 #Write out new csv file with all NA values accounted for, and better explanations of each variable in the dataset
