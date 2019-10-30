@@ -1,5 +1,8 @@
+# import this package to use dredge() to get subsets of models
 library(MuMIn)
+# import this package to use Anova(), ncvTest(), durbinWatsonTest() and vif()
 library(car)
+
 # read .csv data
 raw_data <- read.csv("BabiesData.csv")
 # omit NA value
@@ -26,6 +29,9 @@ raw_model <- update(raw_model, .~. - smoke - marital - Family_annual_income - fa
 raw_model <- update(raw_model, .~. - number_of_Cigs_per_day)
 summary(raw_model)
 Anova(raw_model)
+
+# raw_model <- dredge(raw_model)
+# raw_model <- head(raw_model, n=10)
 
 # try to add interactions in the raw_model
 second_model <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) + 
@@ -98,3 +104,21 @@ ncvTest(model_4)
 
 # Independence
 
+# p-value is 0.06, fail to deny H0, so residuals are independent
+durbinWatsonTest(model_1)
+# p-value is 0.06, fail to deny H0, so residuals are independent
+durbinWatsonTest(model_2)
+# p-value is 0.07, fail to deny H0, so residuals are independent
+durbinWatsonTest(model_3)
+# p-value is 0.038, deny H0, so residuals are not independent
+durbinWatsonTest(model_4)
+
+# Collinearity
+
+# Problem to be fixed
+# What is the relation between interaction terms and collinearity?
+# interaction variables in model_3 and model_4 seem to have high collinearity
+vif(model_1)
+vif(model_2)
+vif(model_3)
+vif(model_4)
