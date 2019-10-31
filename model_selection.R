@@ -7,6 +7,11 @@ library(car)
 raw_data <- read.csv("BabiesData.csv")
 # omit NA value
 processed_data <- na.omit(raw_data)
+# number_of_data <- ceiling(nrow(processed_data) * 0.8)
+# set.seed(1111)
+# sequence_data <- sample(nrow(processed_data), number_of_data)
+# model_data <- processed_data[sequence_data, ]
+# test_data <- processed_data[-sequence_data, ]
 
 # generate linear model
 raw_model <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) + 
@@ -38,7 +43,7 @@ second_model <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor
                      mothers_race + mothers_education + mothers_height + mothers_weight + 
                      fathers_race + fathers_education + fathers_height + fathers_weight + 
                      Time_since_mother_quit + mothers_education:Length_of_Gestation_Days +
-                     mothers_race:Length_of_Gestation_Days, data = processed_data, na.action = "na.fail")
+                     mothers_race:Length_of_Gestation_Days, data = model_data, na.action = "na.fail")
 summary(second_model)
 Anova(second_model)
 
@@ -47,26 +52,58 @@ Anova(second_model)
 new_model <- dredge(second_model)
 models <- head(new_model, n=4)
 
+# model_1 <- models[1]
+# model_1 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + 
+#                  mothers_race + mothers_education + mothers_height + fathers_weight + 
+#                  Time_since_mother_quit + mothers_education:Length_of_Gestation_Days + 
+#                  mothers_race:Length_of_Gestation_Days, data = model_data, 
+#               na.action = "na.fail")
+
 model_1 <- models[1]
-model_1 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) + 
-                                  mothers_height + fathers_race + fathers_weight + Time_since_mother_quit, 
+model_1 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
+                                  mothers_height + fathers_race + fathers_weight + Time_since_mother_quit,
                                   data = processed_data, na.action = "na.fail")
+
+# model_2 <- models[2]
+# model_2 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + mothers_race + mothers_education +
+#                  mothers_height + fathers_height + fathers_weight + 
+#                  Time_since_mother_quit + mothers_education:Length_of_Gestation_Days + 
+#                  mothers_race:Length_of_Gestation_Days, data = model_data, 
+#               na.action = "na.fail")
+
 model_2 <- models[2]
-model_2 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) + 
-                                  mothers_height + mothers_weight + fathers_race + fathers_weight + Time_since_mother_quit, 
+model_2 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
+                                  mothers_height + mothers_weight + fathers_race + fathers_weight + Time_since_mother_quit,
                                   data = processed_data, na.action = "na.fail")
+# 
+# model_3 <- models[3]
+# model_3 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + mothers_race + 
+#                  mothers_education + mothers_height + mothers_weight + fathers_weight + 
+#                  Time_since_mother_quit + mothers_education:Length_of_Gestation_Days + 
+#                  mothers_race:Length_of_Gestation_Days, data = model_data, 
+#               na.action = "na.fail")
+
 model_3 <- models[3]
-model_3 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) + 
-                                  mothers_education + mothers_height + fathers_race + fathers_weight + 
-                                  Time_since_mother_quit + mothers_education:Length_of_Gestation_Days,  
+model_3 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
+                                  mothers_education + mothers_height + fathers_race + fathers_weight +
+                                  Time_since_mother_quit + mothers_education:Length_of_Gestation_Days,
                                   data = processed_data, na.action = "na.fail")
+
+# model_4 <- models[4]
+# model_4 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + mothers_race + mothers_education + 
+#                  mothers_height + fathers_race + fathers_weight + 
+#                  Time_since_mother_quit + mothers_education:Length_of_Gestation_Days + 
+#                  mothers_race:Length_of_Gestation_Days, data = model_data, 
+#               na.action = "na.fail")
+
 model_4 <- models[4]
-model_4 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) + 
-                                  mothers_race + mothers_education + mothers_height + fathers_weight + 
-                                  Time_since_mother_quit + mothers_education:Length_of_Gestation_Days + 
+model_4 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
+                                  mothers_race + mothers_education + mothers_height + fathers_weight +
+                                  Time_since_mother_quit + mothers_education:Length_of_Gestation_Days +
                                   mothers_race:Length_of_Gestation_Days, data = processed_data, na.action = "na.fail")
 
 # Checking model assumptions
+
 
 # Error Distribution
 
