@@ -1,6 +1,16 @@
 library(dplyr)
 library(tidyverse)
 library(crunch)
+library(ggplot2)
+library(ggthemes)
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(ggthemes)
+library(readxl)
+library(ggpubr)
+library(multcomp)
 
 babies <- read.csv("babies23.data", sep = "")
 #babies <- read.csv("babies.csv")
@@ -95,6 +105,21 @@ babies$marital <- factor(babies$marital,
                          levels = c(1, 2, 3, 4, 5), 
                          labels = c("Married", "Legally separated", "Divorced", "Widowed", "Never married"))
 
+#Plotting :For mothers who smoked, plotting the quantity of cigarettes smoked per day vs baby birth weight
+smokes_now <- babies %>% filter(smoke == "Smokes Now")
+
+smokes_now %>% 
+  gather(age, dage, ht, dht, gestation, dwt, mothers_weight, key = "param", value = "value") %>% 
+  ggplot(aes(x = value, y= wt, colour = number)) +
+  geom_point() + facet_wrap(~param, scales = "free") + theme_bw()
+
+smokes_now1 <- babies %>% filter(smoke == "Smokes Now")
+
+smokes_now1 %>% 
+  gather(age, dage, ht, dht, gestation, dwt, mothers_weight, key = "param", value = "value") %>% 
+  ggplot(aes(x = value, y= wt, colour = race)) +
+  geom_point() + facet_wrap(~param, scales = "free") + theme_bw()
+
 
 
 #Rename headers to further explain what each column means
@@ -113,22 +138,6 @@ babies <- babies %>% rename(number_of_Cigs_per_day = number)
 babies <- babies %>% rename(Number_of_previous_pregnancies = parity)
 babies <- babies %>% rename(Time_since_mother_quit = time)
 babies <- babies %>% rename(Length_of_Gestation_Days = gestation)
-
-#Plot number of cigarettes per day vs baby birth weight
-ggplot(babies, aes(number, wt)) + geom_boxplot()
-
-#Plot the number of cigaretttes per day vs family income
-ggplot(babies, aes(inc, wt)) + geom_boxplot()
-
-#Plot gestation time in days vs baby weight
-ggplot(babies, aes(gestation, wt)) + geom_point()
-#Results show the optimal gestation period is about 294 days
-#Full term babies are at 42 weeks gestation
-
-
-ggplot(babies, aes(dage, wt)) + geom_smooth()
-
-ggplot(babies, aes(ed, wt)) + geom_boxplot()
 
 
 
