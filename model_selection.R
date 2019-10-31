@@ -43,7 +43,7 @@ second_model <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor
                      mothers_race + mothers_education + mothers_height + mothers_weight + 
                      fathers_race + fathers_education + fathers_height + fathers_weight + 
                      Time_since_mother_quit + mothers_education:Length_of_Gestation_Days +
-                     mothers_race:Length_of_Gestation_Days, data = model_data, na.action = "na.fail")
+                     mothers_race:Length_of_Gestation_Days, data = processed_data, na.action = "na.fail")
 summary(second_model)
 Anova(second_model)
 
