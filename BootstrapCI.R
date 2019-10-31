@@ -1,3 +1,13 @@
+# Detect number of cores
+
+nCores<-detectCores()
+
+# Define cluster you make
+
+myClust<-makeCluster(nCores-1,type="FORK")
+
+# Bootstrap confidence intervals for all covariates and parameters
+
 lmBoot <- function(inputData, nBoot,regmodel){
   
   # Create variable myformula to use in regression model later
@@ -32,3 +42,7 @@ lmBoot <- function(inputData, nBoot,regmodel){
   parApply(myClust,dataframeOfBootCoefs,2,quantile,probs=c(0.025,0.975))
   
 }
+
+# Stop cluster used by lmBoot
+
+stopCluster(myClust)
