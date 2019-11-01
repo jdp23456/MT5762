@@ -1,3 +1,8 @@
+
+library(parallel)
+library(dplyr)
+library(tidyverse)
+
 # Detect number of cores
 
 nCores<-detectCores()
