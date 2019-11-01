@@ -16,18 +16,17 @@ library(MuMIn)
 library(car)
 #-----------------------------------------------------------
 #DATA CLEANING, PLOTTING, SUMMARIZING
-
+#Read in the babies datafile
 babies <- read.csv("babies23.data", sep = "")
-#babies <- read.csv("babies.csv")
-babies
 
-#Remove the plurality, outcome, date, and sex columns from the dataframe 
+
+#Remove the plurality, outcome, date, and sex columns from the dataframe as they are not useful for our analysis
 babies <- subset(babies, select = -c(pluralty, outcome, date, sex))
 
-#Rename mother's weight because R assigns wt.1 when there are 2 "wt" columns (wt is the birth weight of the baby)
+#Rename mother's weight because R assigns wt.1 when there are 2 "wt" columns (wt is also the birth weight of the baby)
 babies <- babies %>% rename(mothers_weight = wt.1)
 
-
+#Filter all of the values that are unknown or not applicable to our analysis
 babies %>% filter(wt == 999)
 babies %>% filter(gestation == 999)
 babies %>% filter(race == 99 | race == 10)
@@ -45,7 +44,7 @@ babies %>% filter(number == 98 | number == 99 | number == 9)
 babies %>% filter(dwt == 999)
 babies %>% filter(mothers_weight == 999)
 
-#Replace unknown values with NA
+#Replace all the unknown or non-applicable values with NA
 babies$wt[babies$wt == 999] = NA
 babies$gestation[babies$gestation == 999] = NA
 babies$race[babies$race == 99] = NA
@@ -79,7 +78,7 @@ babies$ed[babies$ed %in% 6:7] = 6
 babies$ded[babies$ed %in% 6:7] = 6
 
 
-#Write out variables as factors to ease confusion for what each number means 
+#Write out variables as factors to ease confusion for what each number means for each column
 
 babies$smoke <- factor(babies$smoke, 
                        levels = c(0, 1, 2, 3), 
@@ -120,12 +119,6 @@ smokes_now %>%
   geom_smooth() + facet_wrap(~param, scales = "free") + theme_bw()
 
 
-babies %>% 
-  gather(age, ht, gestation, mothers_weight, key = "param", value = "value") %>% 
-  ggplot(aes(x = value, y= wt, colour = race)) +
-  geom_point() + facet_wrap(~param, scales = "free") + theme_bw()
-
-
 #Rename headers to further explain what each column means
 babies <- babies %>% rename(Birth_Weight = wt)
 babies <- babies %>% rename(mothers_education = ed)
@@ -142,8 +135,6 @@ babies <- babies %>% rename(number_of_Cigs_per_day = number)
 babies <- babies %>% rename(Number_of_previous_pregnancies = parity)
 babies <- babies %>% rename(Time_since_mother_quit = time)
 babies <- babies %>% rename(Length_of_Gestation_Days = gestation)
-
-
 
 
 #Write out new csv file with all NA values accounted for, and better explanations of each variable in the dataset
