@@ -141,20 +141,19 @@ ncvTest(model_4)
 
 # Independence
 
-# p-value is 0.06, fail to deny H0, so residuals are independent
+# p-value is 0.054, fail to deny H0, so residuals are independent
 durbinWatsonTest(model_1)
-# p-value is 0.06, fail to deny H0, so residuals are independent
-durbinWatsonTest(model_2)
 # p-value is 0.07, fail to deny H0, so residuals are independent
+durbinWatsonTest(model_2)
+# p-value is 0.066, fail to deny H0, so residuals are independent
 durbinWatsonTest(model_3)
-# p-value is 0.038, deny H0, so residuals are not independent
+# p-value is 0.034, deny H0, so residuals are not independent
 durbinWatsonTest(model_4)
 
 # Collinearity
 
-# Problem to be fixed
-# What is the relation between interaction terms and collinearity?
 # interaction variables in model_3 and model_4 seem to have high collinearity
+# interaction terms have high collinearity, that is ok
 vif(model_1)
 vif(model_2)
 vif(model_3)
