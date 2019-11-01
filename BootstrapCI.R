@@ -48,6 +48,9 @@ lmBoot <- function(inputData, nBoot,regmodel){
   
 }
 
+lmBoot(inputData,100,Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
+         mothers_height + fathers_race + fathers_weight + Time_since_mother_quit)
+
 # Stop cluster used by lmBoot
 
 stopCluster(myClust)
