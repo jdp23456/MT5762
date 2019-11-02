@@ -107,7 +107,7 @@ babies$drace <- factor(babies$drace,
 babies$marital <- factor(babies$marital, 
                          levels = c(1, 2, 3, 4, 5), 
                          labels = c("Married", "Legally separated", "Divorced", "Widowed", "Never married"))
-
+babies$parity <- factor(babies$parity)
 
 #Only looking at mothers who smoke, so we filter on smokes now
 smokes_now <- babies %>% filter(smoke == "Smokes Now")
@@ -116,7 +116,7 @@ smokes_now <- babies %>% filter(smoke == "Smokes Now")
 smokes_now %>% 
   gather(age, dage, ht, dht, gestation, dwt, mothers_weight, key = "param", value = "value") %>% 
   ggplot(aes(x = value, y= wt, colour = number)) +
-  geom_smooth() + facet_wrap(~param, scales = "free") + theme_bw()
+  geom_point() + facet_wrap(~param, scales = "free") + theme_bw()
 
 
 #Rename headers to further explain what each column means
