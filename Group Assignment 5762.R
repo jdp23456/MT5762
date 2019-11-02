@@ -109,6 +109,7 @@ babies$marital <- factor(babies$marital,
                          labels = c("Married", "Legally separated", "Divorced", "Widowed", "Never married"))
 babies$parity <- factor(babies$parity)
 
+
 #Only looking at mothers who smoke, so we filter on smokes now
 smokes_now <- babies %>% filter(smoke == "Smokes Now")
 
