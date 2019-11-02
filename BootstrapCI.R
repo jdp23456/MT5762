@@ -1,7 +1,16 @@
+# call libraries involved in bootstrap including parallelization
 
 library(parallel)
 library(dplyr)
 library(tidyverse)
+
+# read in cleaned babies data file
+
+raw_data<-read.csv("BabiesData.csv")
+
+#Omit all NA values from the cleaned babies data file 
+
+BabiesData<-na.omit(raw_data)
 
 # Detect number of cores
 
@@ -38,7 +47,11 @@ lmBoot <- function(inputData, nBoot,regmodel){
     
   }
   
+  # Run Lm model on all bootstrap samples to give 1000 coefficient estimates
+  
   ourBootReg<- parLapply(myClust,bootList,function(itemFromList){coef(lm(myformula,data=itemFromList))})
+  
+  # Compile all coefficient estimates into one dataframe
   
   dataframeOfBootCoefs<-plyr::ldply(ourBootReg)
   
@@ -48,9 +61,17 @@ lmBoot <- function(inputData, nBoot,regmodel){
   
 }
 
-lmBoot(inputData,100,Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
-         mothers_height + fathers_race + fathers_weight + Time_since_mother_quit)
+# Run lmBoot function on our best model
+
+lmBoot(BabiesData,100,model_1)
 
 # Stop cluster used by lmBoot
 
 stopCluster(myClust)
+
+
+
+
+
+
+
