@@ -2,6 +2,9 @@
 library(MuMIn)
 # import this package to use Anova(), ncvTest(), durbinWatsonTest() and vif()
 library(car)
+#Import pakcage effects to use for partial resoidual plotting for interaction variables
+library("effects")
+
 
 # read .csv data
 raw_data <- read.csv("BabiesData.csv")
@@ -158,3 +161,11 @@ vif(model_1)
 vif(model_2)
 vif(model_3)
 vif(model_4)
+
+# Linearity (To check that linearity for each term in our best model is appropriate, we checked the partial plots of the residuals)
+
+# Model_1
+par(mfrow=c(3,2))
+termplot(model_1,se=T,partial.resid=T)
+
+
