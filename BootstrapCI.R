@@ -63,7 +63,8 @@ lmBoot <- function(inputData, nBoot,regmodel){
 
 # Run lmBoot function on our best model
 
-lmBoot(BabiesData,100,model_1)
+lmBoot(BabiesData,100,Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies +
+         mothers_height + fathers_race + fathers_weight + Time_since_mother_quit)
 
 # Stop cluster used by lmBoot
 
