@@ -76,17 +76,17 @@ babies$race[babies$race %in% 0:5] = 5
 babies$drace[babies$drace %in% 0:5] = 5
 babies$ed[babies$ed %in% 6:7] = 6
 babies$ded[babies$ed %in% 6:7] = 6
-babies$parity[babies$parity %in% 2:3]=2
-babies$parity[babies$parity %in% 4:5]=4
-babies$parity[babies$parity %in% 6:7]=6
-babies$parity[babies$parity %in% 8:9]=8
-babies$parity[babies$parity %in% 10:13]=10
+# babies$parity[babies$parity %in% 2:3]=2
+# babies$parity[babies$parity %in% 4:5]=4
+# babies$parity[babies$parity %in% 6:7]=6
+# babies$parity[babies$parity %in% 8:9]=8
+# babies$parity[babies$parity %in% 10:13]=10
 
 #Write out variables as factors to ease confusion for what each number means for each column
 
-babies$parity <- factor(babies$parity,
-                        levels = c(0, 1, 2, 4, 6, 8, 10),
-                        labels =c("0", "1", "2 or 3", "4 or 5", "6 or 7", "8 or 9", "10 or more"))
+babies$parity <- factor(babies$parity)
+                        # levels = c(0, 1, 2, 4, 6, 8, 10),
+                        # labels =c("0", "1", "2 or 3", "4 or 5", "6 or 7", "8 or 9", "10 or more"))
 babies$smoke <- factor(babies$smoke, 
                        levels = c(0, 1, 2, 3), 
                        labels = c("Never", "Smokes Now", "Smoked Until Current Pregnancy", "Once smoked, doesn't now"))
@@ -355,8 +355,15 @@ subset(babies_df,Number_of_previous_pregnancies==11)
 subset(babies_df,Number_of_previous_pregnancies==10)
 subset(babies_df,Number_of_previous_pregnancies==9)
 subset(babies_df,Number_of_previous_pregnancies==7)
-a <- subset(babies_df, Number_of_previous_pregnancies =< 6)
+a <- subset(babies_df, Number_of_previous_pregnancies == 0)
+a <- rbind(a,subset(babies_df,Number_of_previous_pregnancies==1))
+a <- rbind(a,subset(babies_df,Number_of_previous_pregnancies==2))
+a <- rbind(a,subset(babies_df,Number_of_previous_pregnancies==3))
+a <- rbind(a,subset(babies_df,Number_of_previous_pregnancies==4))
+a <- rbind(a,subset(babies_df,Number_of_previous_pregnancies==5))
+a <- rbind(a,subset(babies_df,Number_of_previous_pregnancies==6))
 a <- rbind(a,subset(babies_df,Number_of_previous_pregnancies==9))
+
 
 k_folds_cv <- function(k,model_to_fit){
   #split the data into 5 'folds'; assign one fold as validation set, and the remaining as training set
@@ -381,6 +388,7 @@ k_folds_cv(5,model2)
 best_model <- model1
 #END#
 
+file <- write.csv(babies_df, "TestBabiesData.csv")
 #---------------------------------------------------------
 #BOOTSTRAPPING CI
 
