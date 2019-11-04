@@ -12,9 +12,7 @@ raw_data<-read.csv("BabiesData.csv")
 
 BabiesData<-na.omit(raw_data)
 
-#create factor for number of previous pregnancies
-
-BabiesData$Number_of_previous_pregnancies<-factor(BabiesData$Number_of_previous_pregnancies)
+BabiesData$Number_of_previous_pregnancies<-as.factor(BabiesData$Number_of_previous_pregnancies)
 
 # Detect number of cores
 
@@ -57,17 +55,27 @@ lmBoot <- function(inputData, nBoot,regmodel){
   
   # Compile all coefficient estimates into one dataframe
   
-  dataframeOfBootCoefs<-plyr::ldply(ourBootReg)
+  dataframeOfBootCoefs<-plyr::ldply(ourBootReg,rbind)
+  
+  #return(ourBootReg)
   
   # take central 95% of each columns esimates (simulated sampling dists) 
   
-  parApply(myClust,dataframeOfBootCoefs,2,quantile,probs=c(0.025,0.975))
+  parApply(myClust,dataframeOfBootCoefs,2,quantile,probs=c(0.025,0.975),na.rm=TRUE)
   
 }
 
 # Run lmBoot function on our best model
 
-lmBoot(BabiesData,1000,Birth_Weight ~ Number_of_previous_pregnancies)
+lmBoot(BabiesData,100,Birth_Weight ~ Length_of_Gestation_Days + mothers_height+fathers_race+fathers_weight + Time_since_mother_quit)
+
+lmBoot(BabiesData,100,Birth_Weight ~ Time_since_mother_quit)
+
+lmBoot(BabiesData,100,Birth_Weight ~ Number_of_previous_pregnancies)
+
+lmBoot(BabiesData,100,Birth_Weight ~ Length_of_Gestation_Days + mothers_height + fathers_race + fathers_weight)
+
+lmBoot(BabiesData,100,Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies + mothers_height + fathers_race + fathers_weight + Time_since_mother_quit)
 
 # Stop cluster used by lmBoot
 
