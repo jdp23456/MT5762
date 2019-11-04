@@ -169,7 +169,7 @@ processed_data <- na.omit(raw_data)
 # test_data <- processed_data[-sequence_data, ]
 
 # generate linear model
-raw_model <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) + 
+raw_model <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies + 
                   mothers_race + mothers_age + mothers_education + mothers_height + 
                   mothers_weight + fathers_race + fathers_age + fathers_education + 
                   fathers_height + fathers_weight + marital + Family_annual_income + 
@@ -194,7 +194,7 @@ Anova(raw_model)
 # raw_model <- head(raw_model, n=10)
 
 # try to add interactions in the raw_model
-second_model <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) + 
+second_model <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies + 
                      mothers_race + mothers_education + mothers_height + mothers_weight + 
                      fathers_race + fathers_education + fathers_height + fathers_weight + 
                      Time_since_mother_quit + mothers_education:Length_of_Gestation_Days +
@@ -355,7 +355,7 @@ subset(babies_df,Number_of_previous_pregnancies==11)
 subset(babies_df,Number_of_previous_pregnancies==10)
 subset(babies_df,Number_of_previous_pregnancies==9)
 subset(babies_df,Number_of_previous_pregnancies==7)
-a <- subset(babies_df, Number_of_previous_pregnancies == 6)
+a <- subset(babies_df, Number_of_previous_pregnancies =< 6)
 a <- rbind(a,subset(babies_df,Number_of_previous_pregnancies==9))
 
 k_folds_cv <- function(k,model_to_fit){
