@@ -388,7 +388,7 @@ k_folds_cv(5,model2)
 best_model <- model1
 #END#
 
-file <- write.csv(babies_df, "TestBabiesData.csv")
+
 #---------------------------------------------------------
 #BOOTSTRAPPING CI
 
