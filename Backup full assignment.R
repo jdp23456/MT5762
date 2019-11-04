@@ -6,27 +6,20 @@ library(dplyr)
 library(lubridate)
 library(ggplot2)
 library(ggthemes)
-library(caret)
-library(parallel)
-library(dplyr)
-library(tidyverse)
-# import this package to use dredge() to get subsets of models
-library(MuMIn)
-# import this package to use Anova(), ncvTest(), durbinWatsonTest() and vif()
-library(car)
-#-----------------------------------------------------------
-#DATA CLEANING, PLOTTING, SUMMARIZING
-#Read in the babies datafile
+
+
 babies <- read.csv("babies23.data", sep = "")
+#babies <- read.csv("babies.csv")
+babies
 
-
-#Remove the plurality, outcome, date, and sex columns from the dataframe as they are not useful for our analysis
+#Remove the plurality, outcome, date, and sex columns from the dataframe 
 babies <- subset(babies, select = -c(pluralty, outcome, date, sex))
 
-#Rename mother's weight because R assigns wt.1 when there are 2 "wt" columns (wt is also the birth weight of the baby)
+#Rename mother's weight because R assigns wt.1 when there are 2 "wt" columns (wt is the birth weight of the baby)
 babies <- babies %>% rename(mothers_weight = wt.1)
 
-#Filter all of the values that are unknown or not applicable to our analysis
+
+
 babies %>% filter(wt == 999)
 babies %>% filter(gestation == 999)
 babies %>% filter(race == 99 | race == 10)
@@ -44,7 +37,7 @@ babies %>% filter(number == 98 | number == 99 | number == 9)
 babies %>% filter(dwt == 999)
 babies %>% filter(mothers_weight == 999)
 
-#Replace all the unknown or non-applicable values with NA
+#Replace unknown values with NA
 babies$wt[babies$wt == 999] = NA
 babies$gestation[babies$gestation == 999] = NA
 babies$race[babies$race == 99] = NA
@@ -76,17 +69,11 @@ babies$race[babies$race %in% 0:5] = 5
 babies$drace[babies$drace %in% 0:5] = 5
 babies$ed[babies$ed %in% 6:7] = 6
 babies$ded[babies$ed %in% 6:7] = 6
-# babies$parity[babies$parity %in% 2:3]=2
-# babies$parity[babies$parity %in% 4:5]=4
-# babies$parity[babies$parity %in% 6:7]=6
-# babies$parity[babies$parity %in% 8:9]=8
-# babies$parity[babies$parity %in% 10:13]=10
+babies$parity[babies$parity %in% 10:13]=10
 
-#Write out variables as factors to ease confusion for what each number means for each column
 
-babies$parity <- factor(babies$parity)
-                        # levels = c(0, 1, 2, 4, 6, 8, 10),
-                        # labels =c("0", "1", "2 or 3", "4 or 5", "6 or 7", "8 or 9", "10 or more"))
+#Write out variables as factors to ease confusion for what each number means 
+
 babies$smoke <- factor(babies$smoke, 
                        levels = c(0, 1, 2, 3), 
                        labels = c("Never", "Smokes Now", "Smoked Until Current Pregnancy", "Once smoked, doesn't now"))
@@ -114,17 +101,15 @@ babies$drace <- factor(babies$drace,
 babies$marital <- factor(babies$marital, 
                          levels = c(1, 2, 3, 4, 5), 
                          labels = c("Married", "Legally separated", "Divorced", "Widowed", "Never married"))
-babies$parity <- factor(babies$parity)
 
-
-#Only looking at mothers who smoke, so we filter on smokes now
-smokes_now <- babies %>% filter(smoke == "Smokes Now")
 
 #Plotting :For mothers who smoked, plotting the quantity of cigarettes smoked per day vs baby birth weight
+smokes_now <- babies %>% filter(smoke == "Smokes Now")
+
 smokes_now %>% 
   gather(age, dage, ht, dht, gestation, dwt, mothers_weight, key = "param", value = "value") %>% 
   ggplot(aes(x = value, y= wt, colour = number)) +
-  geom_point() + facet_wrap(~param, scales = "free") + theme_bw()
+  geom_smooth() + facet_wrap(~param, scales = "free") + theme_bw()
 
 
 #Rename headers to further explain what each column means
@@ -150,13 +135,18 @@ write.csv(babies, file = "BabiesData.csv")
 
 
 
-#------------------------------------------------------------------------
+#-------------------------------------------
+#------------------------------------------
 #MODEL SELECTION
+
 
 # import this package to use dredge() to get subsets of models
 library(MuMIn)
 # import this package to use Anova(), ncvTest(), durbinWatsonTest() and vif()
 library(car)
+#Import pakcage effects to use for partial resoidual plotting for interaction variables
+library("effects")
+
 
 # read .csv data
 raw_data <- read.csv("BabiesData.csv")
@@ -169,7 +159,7 @@ processed_data <- na.omit(raw_data)
 # test_data <- processed_data[-sequence_data, ]
 
 # generate linear model
-raw_model <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies + 
+raw_model <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) + 
                   mothers_race + mothers_age + mothers_education + mothers_height + 
                   mothers_weight + fathers_race + fathers_age + fathers_education + 
                   fathers_height + fathers_weight + marital + Family_annual_income + 
@@ -194,7 +184,7 @@ Anova(raw_model)
 # raw_model <- head(raw_model, n=10)
 
 # try to add interactions in the raw_model
-second_model <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies + 
+second_model <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) + 
                      mothers_race + mothers_education + mothers_height + mothers_weight + 
                      fathers_race + fathers_education + fathers_height + fathers_weight + 
                      Time_since_mother_quit + mothers_education:Length_of_Gestation_Days +
@@ -215,7 +205,7 @@ models <- head(new_model, n=4)
 #               na.action = "na.fail")
 
 model_1 <- models[1]
-model_1 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies +
+model_1 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
                 mothers_height + fathers_race + fathers_weight + Time_since_mother_quit,
               data = processed_data, na.action = "na.fail")
 
@@ -227,7 +217,7 @@ model_1 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_prev
 #               na.action = "na.fail")
 
 model_2 <- models[2]
-model_2 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies +
+model_2 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
                 mothers_height + mothers_weight + fathers_race + fathers_weight + Time_since_mother_quit,
               data = processed_data, na.action = "na.fail")
 # 
@@ -239,7 +229,7 @@ model_2 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_prev
 #               na.action = "na.fail")
 
 model_3 <- models[3]
-model_3 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies +
+model_3 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
                 mothers_education + mothers_height + fathers_race + fathers_weight +
                 Time_since_mother_quit + mothers_education:Length_of_Gestation_Days,
               data = processed_data, na.action = "na.fail")
@@ -252,7 +242,7 @@ model_3 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_prev
 #               na.action = "na.fail")
 
 model_4 <- models[4]
-model_4 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies +
+model_4 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
                 mothers_race + mothers_education + mothers_height + fathers_weight +
                 Time_since_mother_quit + mothers_education:Length_of_Gestation_Days +
                 mothers_race:Length_of_Gestation_Days, data = processed_data, na.action = "na.fail")
@@ -296,36 +286,47 @@ ncvTest(model_4)
 
 # Independence
 
-# p-value is 0.06, fail to deny H0, so residuals are independent
+# p-value is 0.054, fail to deny H0, so residuals are independent
 durbinWatsonTest(model_1)
-# p-value is 0.06, fail to deny H0, so residuals are independent
-durbinWatsonTest(model_2)
 # p-value is 0.07, fail to deny H0, so residuals are independent
+durbinWatsonTest(model_2)
+# p-value is 0.066, fail to deny H0, so residuals are independent
 durbinWatsonTest(model_3)
-# p-value is 0.038, deny H0, so residuals are not independent
+# p-value is 0.034, deny H0, so residuals are not independent
 durbinWatsonTest(model_4)
 
 # Collinearity
 
-# Problem to be fixed
-# What is the relation between interaction terms and collinearity?
 # interaction variables in model_3 and model_4 seem to have high collinearity
+# interaction terms have high collinearity, that is ok
 vif(model_1)
 vif(model_2)
 vif(model_3)
 vif(model_4)
 
-#--------------------------------------------------------------------------
-#VALIDATION OF FINAL VERSION
+# Linearity (To check that linearity for each term in our best model is appropriate, we checked the partial plots of the residuals)
 
+# Model_1
+par(mfrow=c(3,2))
+termplot(model_1,se=T,partial.resid=T)
+
+#-------------------------------------------------
+#-------------------------------------------------
+#-------------------------------------------------
+
+#Validation
+
+library(dplyr) 
 #we use cleaned up data 'processed_data'
+raw_data <- read.csv("BabiesData.csv")
+processed_data <- na.omit(raw_data)
 babies_df <- processed_data
 
 #according to the result of AIC we choose top two models as model_1 and model_2
-model1 <- Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies +
+model1 <- Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
   mothers_height + fathers_race + fathers_weight + Time_since_mother_quit
 
-model2 <- Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies +
+model2 <- Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
   mothers_height + mothers_weight + fathers_race + fathers_weight + Time_since_mother_quit
 
 # VALIDATION ON 20% OF DATA
@@ -355,15 +356,8 @@ subset(babies_df,Number_of_previous_pregnancies==11)
 subset(babies_df,Number_of_previous_pregnancies==10)
 subset(babies_df,Number_of_previous_pregnancies==9)
 subset(babies_df,Number_of_previous_pregnancies==7)
-a <- subset(babies_df, Number_of_previous_pregnancies == 0)
-a <- rbind(a,subset(babies_df,Number_of_previous_pregnancies==1))
-a <- rbind(a,subset(babies_df,Number_of_previous_pregnancies==2))
-a <- rbind(a,subset(babies_df,Number_of_previous_pregnancies==3))
-a <- rbind(a,subset(babies_df,Number_of_previous_pregnancies==4))
-a <- rbind(a,subset(babies_df,Number_of_previous_pregnancies==5))
-a <- rbind(a,subset(babies_df,Number_of_previous_pregnancies==6))
+a <- subset(babies_df, Number_of_previous_pregnancies <=6)
 a <- rbind(a,subset(babies_df,Number_of_previous_pregnancies==9))
-
 
 k_folds_cv <- function(k,model_to_fit){
   #split the data into 5 'folds'; assign one fold as validation set, and the remaining as training set
@@ -389,8 +383,30 @@ best_model <- model1
 #END#
 
 
-#---------------------------------------------------------
-#BOOTSTRAPPING CI
+#-------------------------------------------------
+#-------------------------------------------------
+#-------------------------------------------------
+#-------------------------------------------------
+#bootstrapping CI
+
+
+# call libraries involved in bootstrap including parallelization
+
+library(parallel)
+library(dplyr)
+library(tidyverse)
+
+# read in cleaned babies data file
+
+raw_data<-read.csv("BabiesData.csv")
+
+#Omit all NA values from the cleaned babies data file 
+
+BabiesData<-na.omit(raw_data)
+
+#create factor for number of previous pregnancies
+
+BabiesData$Number_of_previous_pregnancies<-factor(BabiesData$Number_of_previous_pregnancies)
 
 # Detect number of cores
 
@@ -401,8 +417,6 @@ nCores<-detectCores()
 myClust<-makeCluster(nCores-1,type="FORK")
 
 # Bootstrap confidence intervals for all covariates and parameters
-
-inputData <-  processed_data
 
 lmBoot <- function(inputData, nBoot,regmodel){
   
@@ -429,7 +443,11 @@ lmBoot <- function(inputData, nBoot,regmodel){
     
   }
   
+  # Run Lm model on all bootstrap samples to give 'nBoot' coefficient estimates
+  
   ourBootReg<- parLapply(myClust,bootList,function(itemFromList){coef(lm(myformula,data=itemFromList))})
+  
+  # Compile all coefficient estimates into one dataframe
   
   dataframeOfBootCoefs<-plyr::ldply(ourBootReg)
   
@@ -439,7 +457,20 @@ lmBoot <- function(inputData, nBoot,regmodel){
   
 }
 
+# Run lmBoot function on our best model
+
+lmBoot(BabiesData,1000,Birth_Weight ~ Number_of_previous_pregnancies)
+
 # Stop cluster used by lmBoot
 
 stopCluster(myClust)
+
+
+
+
+
+
+
+
+
 
