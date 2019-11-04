@@ -215,7 +215,7 @@ models <- head(new_model, n=4)
 #               na.action = "na.fail")
 
 model_1 <- models[1]
-model_1 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
+model_1 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies +
                 mothers_height + fathers_race + fathers_weight + Time_since_mother_quit,
               data = processed_data, na.action = "na.fail")
 
@@ -227,7 +227,7 @@ model_1 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Numb
 #               na.action = "na.fail")
 
 model_2 <- models[2]
-model_2 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
+model_2 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies +
                 mothers_height + mothers_weight + fathers_race + fathers_weight + Time_since_mother_quit,
               data = processed_data, na.action = "na.fail")
 # 
@@ -239,7 +239,7 @@ model_2 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Numb
 #               na.action = "na.fail")
 
 model_3 <- models[3]
-model_3 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
+model_3 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies +
                 mothers_education + mothers_height + fathers_race + fathers_weight +
                 Time_since_mother_quit + mothers_education:Length_of_Gestation_Days,
               data = processed_data, na.action = "na.fail")
@@ -252,7 +252,7 @@ model_3 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Numb
 #               na.action = "na.fail")
 
 model_4 <- models[4]
-model_4 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
+model_4 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies +
                 mothers_race + mothers_education + mothers_height + fathers_weight +
                 Time_since_mother_quit + mothers_education:Length_of_Gestation_Days +
                 mothers_race:Length_of_Gestation_Days, data = processed_data, na.action = "na.fail")
@@ -322,10 +322,10 @@ vif(model_4)
 babies_df <- processed_data
 
 #according to the result of AIC we choose top two models as model_1 and model_2
-model1 <- Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
+model1 <- Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies +
   mothers_height + fathers_race + fathers_weight + Time_since_mother_quit
 
-model2 <- Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
+model2 <- Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies +
   mothers_height + mothers_weight + fathers_race + fathers_weight + Time_since_mother_quit
 
 # VALIDATION ON 20% OF DATA
@@ -355,7 +355,7 @@ subset(babies_df,Number_of_previous_pregnancies==11)
 subset(babies_df,Number_of_previous_pregnancies==10)
 subset(babies_df,Number_of_previous_pregnancies==9)
 subset(babies_df,Number_of_previous_pregnancies==7)
-a <- subset(babies_df, Number_of_previous_pregnancies <=6)
+a <- subset(babies_df, Number_of_previous_pregnancies == 6)
 a <- rbind(a,subset(babies_df,Number_of_previous_pregnancies==9))
 
 k_folds_cv <- function(k,model_to_fit){
