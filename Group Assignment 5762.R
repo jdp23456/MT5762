@@ -76,10 +76,17 @@ babies$race[babies$race %in% 0:5] = 5
 babies$drace[babies$drace %in% 0:5] = 5
 babies$ed[babies$ed %in% 6:7] = 6
 babies$ded[babies$ed %in% 6:7] = 6
-
+babies$parity[babies$parity %in% 2:3]=2
+babies$parity[babies$parity %in% 4:5]=4
+babies$parity[babies$parity %in% 6:7]=6
+babies$parity[babies$parity %in% 8:9]=8
+babies$parity[babies$parity %in% 10:13]=10
 
 #Write out variables as factors to ease confusion for what each number means for each column
 
+babies$parity <- factor(babies$parity,
+                        levels = c(0, 1, 2, 4, 6, 8, 10),
+                        labels =c("0", "1", "2 or 3", "4 or 5", "6 or 7", "8 or 9", "10 or more"))
 babies$smoke <- factor(babies$smoke, 
                        levels = c(0, 1, 2, 3), 
                        labels = c("Never", "Smokes Now", "Smoked Until Current Pregnancy", "Once smoked, doesn't now"))
