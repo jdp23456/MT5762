@@ -69,6 +69,7 @@ babies$race[babies$race %in% 0:5] = 5
 babies$drace[babies$drace %in% 0:5] = 5
 babies$ed[babies$ed %in% 6:7] = 6
 babies$ded[babies$ed %in% 6:7] = 6
+babies$parity[babies$parity %in% 10:13]=10
 
 
 #Write out variables as factors to ease confusion for what each number means 
