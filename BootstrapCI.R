@@ -12,6 +12,10 @@ raw_data<-read.csv("BabiesData.csv")
 
 BabiesData<-na.omit(raw_data)
 
+#create factor for number of previous pregnancies
+
+BabiesData$Number_of_previous_pregnancies<-factor(BabiesData$Number_of_previous_pregnancies)
+
 # Detect number of cores
 
 nCores<-detectCores()
@@ -47,7 +51,7 @@ lmBoot <- function(inputData, nBoot,regmodel){
     
   }
   
-  # Run Lm model on all bootstrap samples to give 1000 coefficient estimates
+  # Run Lm model on all bootstrap samples to give 'nBoot' coefficient estimates
   
   ourBootReg<- parLapply(myClust,bootList,function(itemFromList){coef(lm(myformula,data=itemFromList))})
   
@@ -63,8 +67,7 @@ lmBoot <- function(inputData, nBoot,regmodel){
 
 # Run lmBoot function on our best model
 
-lmBoot(BabiesData,100,Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies +
-         mothers_height + fathers_race + fathers_weight + Time_since_mother_quit)
+lmBoot(BabiesData,1000,Birth_Weight ~ Number_of_previous_pregnancies)
 
 # Stop cluster used by lmBoot
 
