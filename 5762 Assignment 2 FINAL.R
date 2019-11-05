@@ -313,7 +313,7 @@ train_model2 <- lm(model2,data=training_sample) #fit model2
 pred_model2 <- train_model2%>%predict(validation_sample) #validate fitted model2
 mse_model2 <- mean((validation_sample$Birth_Weight - pred_model2)^2) #calculate mse for model2
 
-#----------------------------5-FOLD CROSS VALIDATION----------------------------------------------------------#
+#----------------------------5-FOLD CROSS VALIDATION----------------------------------------------------------
 #(STEP-BY-STEP, i.e. splitting data-fitting model-predicting-calculate mse)
 library(caret)
 k=5
