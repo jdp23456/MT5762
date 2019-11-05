@@ -352,22 +352,6 @@ best_model <- model1
 #---------------------------------------------------------
 #BOOTSTRAPPING CI
 
-# call libraries involved in bootstrap including parallelization
-
-library(parallel)
-library(dplyr)
-library(tidyverse)
-
-# read in cleaned babies data file
-
-raw_data<-read.csv("BabiesData.csv")
-
-#Omit all NA values from the cleaned babies data file 
-
-BabiesData<-na.omit(raw_data)
-
-BabiesData$Number_of_previous_pregnancies<-as.factor(BabiesData$Number_of_previous_pregnancies)
-
 # Detect number of cores
 
 nCores<-detectCores()
@@ -381,9 +365,11 @@ myClust<-makeCluster(nCores-1,type="FORK")
 lmBoot <- function(inputData, nBoot,regmodel){
   
   # Create variable myformula to use in regression model later
+  
   myformula<-as.formula(regmodel)
   
   # Create variable called input data
+  
   nrowdata<-nrow(inputData)
   
   # Create a list for compiling Bootstraps
@@ -393,12 +379,15 @@ lmBoot <- function(inputData, nBoot,regmodel){
   for(i in 1:nBoot){
     
     # Create a Sample Index
+    
     sampleIndex <- sample(1:nrowdata, nrowdata, replace = T)
     
     # Sample the dataset
+    
     bootData<- inputData[sampleIndex,]
     
     #Compile all bootstrap samples into a list called bootData
+    
     bootList[[i]]<-bootData
     
   }
@@ -411,9 +400,7 @@ lmBoot <- function(inputData, nBoot,regmodel){
   
   dataframeOfBootCoefs<-plyr::ldply(ourBootReg,rbind)
   
-  #return(ourBootReg)
-  
-  # take central 95% of each columns esimates (simulated sampling dists) 
+  # take central 95% of each column esimate (simulated sampling dists) 
   
   parApply(myClust,dataframeOfBootCoefs,2,quantile,probs=c(0.025,0.975),na.rm=TRUE)
   
@@ -421,22 +408,16 @@ lmBoot <- function(inputData, nBoot,regmodel){
 
 # Run lmBoot function on our best model
 
-lmBoot(BabiesData,100,Birth_Weight ~ Length_of_Gestation_Days + mothers_height+fathers_race+fathers_weight + Time_since_mother_quit)
+lmBoot(BabiesData,1000,Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies + mothers_height + fathers_race + fathers_weight + Time_since_mother_quit))
 
-lmBoot(BabiesData,100,Birth_Weight ~ Time_since_mother_quit)
+# Create data fram from lmBoot
 
-lmBoot(BabiesData,100,Birth_Weight ~ Number_of_previous_pregnancies)
+lmTable<-as.data.frame(lmBoot(BabiesData,1000,Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies + mothers_height + fathers_race + fathers_weight + Time_since_mother_quit))
 
-lmBoot(BabiesData,100,Birth_Weight ~ Length_of_Gestation_Days + mothers_height + fathers_race + fathers_weight)
+# Format lmTables to look presentable
 
-lmBoot(BabiesData,100,Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies + mothers_height + fathers_race + fathers_weight + Time_since_mother_quit)
+formattable(lmTable)
 
 # Stop cluster used by lmBoot
 
 stopCluster(myClust)
-
-
-
-
-
-
