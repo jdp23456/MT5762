@@ -149,12 +149,16 @@ write.csv(babies, file = "BabiesData.csv")
 
 
 #------------------------------------------------------------------------
+#------------------------------------------
 #MODEL SELECTION
+
 
 # import this package to use dredge() to get subsets of models
 library(MuMIn)
 # import this package to use Anova(), ncvTest(), durbinWatsonTest() and vif()
 library(car)
+#Import pakcage effects to use for partial resoidual plotting for interaction variables
+library("effects")
 
 # read .csv data
 raw_data <- read.csv("BabiesData.csv")
@@ -167,7 +171,7 @@ processed_data <- na.omit(raw_data)
 # test_data <- processed_data[-sequence_data, ]
 
 # generate linear model
-raw_model <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies + 
+raw_model <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) + 
                   mothers_race + mothers_age + mothers_education + mothers_height + 
                   mothers_weight + fathers_race + fathers_age + fathers_education + 
                   fathers_height + fathers_weight + marital + Family_annual_income + 
@@ -192,7 +196,7 @@ Anova(raw_model)
 # raw_model <- head(raw_model, n=10)
 
 # try to add interactions in the raw_model
-second_model <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies + 
+second_model <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) + 
                      mothers_race + mothers_education + mothers_height + mothers_weight + 
                      fathers_race + fathers_education + fathers_height + fathers_weight + 
                      Time_since_mother_quit + mothers_education:Length_of_Gestation_Days +
@@ -206,27 +210,30 @@ new_model <- dredge(second_model)
 models <- head(new_model, n=4)
 
 model_1 <- models[1]
-model_1 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies +
-                mothers_height + fathers_race + fathers_weight + Time_since_mother_quit + smoke,
+model_1 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
+                mothers_height + fathers_race + fathers_weight + Time_since_mother_quit,
               data = processed_data, na.action = "na.fail")
+summary(model_1)
+
 
 model_2 <- models[2]
-model_2 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies +
+model_2 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
                 mothers_height + mothers_weight + fathers_race + fathers_weight + Time_since_mother_quit,
               data = processed_data, na.action = "na.fail")
+summary(model_2)
 
 model_3 <- models[3]
-model_3 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies +
+model_3 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
                 mothers_education + mothers_height + fathers_race + fathers_weight +
                 Time_since_mother_quit + mothers_education:Length_of_Gestation_Days,
               data = processed_data, na.action = "na.fail")
 
-
 model_4 <- models[4]
-model_4 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + Number_of_previous_pregnancies +
+model_4 <- lm(formula = Birth_Weight ~ Length_of_Gestation_Days + as.factor(Number_of_previous_pregnancies) +
                 mothers_race + mothers_education + mothers_height + fathers_weight +
                 Time_since_mother_quit + mothers_education:Length_of_Gestation_Days +
                 mothers_race:Length_of_Gestation_Days, data = processed_data, na.action = "na.fail")
+
 
 # Checking model assumptions
 # Error Distribution
@@ -389,21 +396,14 @@ lmBoot <- function(inputData, nBoot,regmodel){
     #Compile all bootstrap samples into a list called bootData
     
     bootList[[i]]<-bootData
-    
   }
   
   # Run Lm model on all bootstrap samples to give 'nBoot' coefficient estimates
-  
   ourBootReg<- parLapply(myClust,bootList,function(itemFromList){coef(lm(myformula,data=itemFromList))})
-  
   # Compile all coefficient estimates into one dataframe
-  
   dataframeOfBootCoefs<-plyr::ldply(ourBootReg,rbind)
-  
   # take central 95% of each column esimate (simulated sampling dists) 
-  
   parApply(myClust,dataframeOfBootCoefs,2,quantile,probs=c(0.025,0.975),na.rm=TRUE)
-  
 }
 
 # Run lmBoot function on our best model
